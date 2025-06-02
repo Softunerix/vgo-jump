@@ -1,6 +1,6 @@
 # VGO-JUMP
 
-`vgo-jump` is a simple CLI tool that helps locate the full namespace of a Laravel package or class by extracting the word at a specific position in a file and matching it against `use` statements.
+`vgo-jump` is a simple CLI tool that helps locate the full namespace of a Laravel, Python, Java package or class by extracting the word at a specific position in a file and matching it against `use` statements.
 
 ## Features
 
@@ -21,7 +21,7 @@
 go build -o vgo-jump main.go utils.go filepath_utils.go language_config.go
 ```
 
-## To use in VIM
+## To use in Neo-VIM
 
 ```bash
 sudo cp vgo-jump /usr/local/bin/vgo-jump
@@ -87,21 +87,18 @@ end, {})
 vim.keymap.set("n", "<leader>j", ":Jump<CR>", { noremap = true, silent = true })
 ```
 
-In VIM:
-```vim
+In NVIM:
+```vimscript
 :Jump
 ```
-Use this command in VIM to run `vgo-jump` on the current file at the specified line and column.
+Use this command in NVIM to run `vgo-jump` on the current file at the specified line and column.
 
 ## Limitations
 
 - Only works with basic `use` statements
 - Assumes valid UTF-8 input files
-- Assumes you have Alacritty installed
-- Opens a new terminal instead of a new tab in VIM
 
 ## Future modifications
 
 - [ ] Multiple languages support
-- [ ] Open a new tab instead of a terminal
 - [ ] Find a better way to get the project root path
