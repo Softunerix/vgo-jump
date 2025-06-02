@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -44,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Project root found at:", filePath, "with package path:", packagePath)
+	// fmt.Println("Project root found at:", filePath, "with package path:", packagePath)
 
 	projectRoot, err := FindProjectRoot(filePath, langConfig)
 	if err != nil {
@@ -56,16 +55,7 @@ func main() {
 	packagePath = langConfig.AddToRootMarker + strings.TrimRight(packagePath, string(os.PathSeparator))
 	finalPath := filepath.Join(projectRoot, packagePath) + "." + fileExtension
 
-	// fmt.Println("Opening file:", finalPath)
-	cmd := exec.Command("nvim", "--remote-tab", finalPath)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Println("Failed to open in Vim:", err)
-		os.Exit(1)
-	}
+	fmt.Println(finalPath)
 }
 
 // FindProjectRoot tries to find the root of your Laravel project by searching upwards for a marker (like composer.json)

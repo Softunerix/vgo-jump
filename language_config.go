@@ -25,7 +25,7 @@ type Config struct {
 var loadedConfig *Config
 
 func LoadConfig() error {
-	data, err := os.ReadFile("languages.yaml")
+	data, err := os.ReadFile("/etc/vgo-jump/languages.yaml")
 	if err != nil {
 		return err
 	}
