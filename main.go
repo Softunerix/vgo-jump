@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -18,13 +19,26 @@ func main() {
 	lineNum, _ := strconv.Atoi(os.Args[2])
 	colNum, _ := strconv.Atoi(os.Args[3])
 
-	packageName, err := getWordAtPosition(filePath, lineNum, colNum)
+	// Load config once at start
+	if err := LoadConfig(); err != nil {
+		fmt.Println("Failed to load config:", err)
+		os.Exit(1)
+	}
+
+	// Load  language configuration for the file
+	langConfig, fileExtension := GetConfigFor(filePath)
+	if langConfig == nil {
+		fmt.Println("No language config found for file:", filePath)
+		os.Exit(1)
+	}
+
+	packageName, err := GetWordAtPosition(filePath, lineNum, colNum)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
-	packagePath, err := getPackagePath(filePath, packageName)
+	packagePath, err := GetPackagePath(filePath, packageName, langConfig)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -32,17 +46,18 @@ func main() {
 
 	fmt.Println("Project root found at:", filePath, "with package path:", packagePath)
 
-	projectRoot, err := FindProjectRoot(filePath)
+	projectRoot, err := FindProjectRoot(filePath, langConfig)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
 	// Join project root with cleanPath to get absolute path to target file
-	finalPath := filepath.Join(projectRoot, packagePath)
+	packagePath = langConfig.AddToRootMarker + strings.TrimRight(packagePath, string(os.PathSeparator))
+	finalPath := filepath.Join(projectRoot, packagePath) + "." + fileExtension
 
-	fmt.Println("Opening file:", finalPath)
-	cmd := exec.Command("alacritty", "-e", "vim", finalPath)
+	// fmt.Println("Opening file:", finalPath)
+	cmd := exec.Command("nvim", "--remote-tab", finalPath)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -54,12 +69,14 @@ func main() {
 }
 
 // FindProjectRoot tries to find the root of your Laravel project by searching upwards for a marker (like composer.json)
-func FindProjectRoot(startPath string) (string, error) {
+func FindProjectRoot(startPath string, langConfig *LanguageConfig) (string, error) {
 	dir := filepath.Dir(startPath)
 
 	for {
-		if _, err := os.Stat(filepath.Join(dir, "artisan")); err == nil {
-			return dir, nil // found root
+		for _, marker := range langConfig.RootMarker {
+			if _, err := os.Stat(filepath.Join(dir, marker)); err == nil {
+				return dir, nil // found root
+			}
 		}
 
 		parent := filepath.Dir(dir)

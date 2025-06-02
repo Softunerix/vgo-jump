@@ -8,7 +8,7 @@ import (
 )
 
 // Retrieve the word from the file at the specified line and column
-func getWordAtPosition(filepath string, lineNum, colNum int) (string, error) {
+func GetWordAtPosition(filepath string, lineNum, colNum int) (string, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return "", err

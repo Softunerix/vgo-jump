@@ -1,0 +1,33 @@
+php:
+  package_starts_with: "use"
+  package_ends_with: ";"
+  root_marker:
+    - artisan
+    - composer.json
+    - .gitignore
+  lowercase_first_letter: true
+  separator: "\\"
+  add_to_root_marker: ""
+
+java:
+  package_starts_with: "use"
+  package_ends_with: ";"
+  root_marker:
+    - build.gradle
+    - pom.xml
+    - .gitignore
+  add_to_root_marker: "src/main/java/"
+  lowercase_first_letter: false
+  separator: "."
+
+py:
+  package_starts_with: "from"
+  package_ends_with: "import {function}"
+  root_marker:
+    - pyproject.toml
+    - requirements.txt
+    - setup.py
+    - .gitignore
+  add_to_root_marker: ""
+  lowercase_first_letter: false
+  separator: "."
